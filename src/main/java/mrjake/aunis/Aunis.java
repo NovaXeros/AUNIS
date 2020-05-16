@@ -5,6 +5,7 @@ import java.io.IOException;
 import org.apache.logging.log4j.Logger;
 
 import mrjake.aunis.capability.endpoint.ItemEndpointCapability;
+import mrjake.aunis.chunkloader.ChunkLoadingCallback;
 import mrjake.aunis.command.AunisCommands;
 import mrjake.aunis.config.StargateDimensionConfig;
 import mrjake.aunis.datafixer.TileNamesFixer;
@@ -16,6 +17,7 @@ import mrjake.aunis.packet.AunisPacketHandler;
 import mrjake.aunis.proxy.IProxy;
 import mrjake.aunis.worldgen.AunisWorldGen;
 import net.minecraft.util.datafix.FixTypes;
+import net.minecraftforge.common.ForgeChunkManager;
 import net.minecraftforge.common.util.CompoundDataFixer;
 import net.minecraftforge.common.util.ModFixs;
 import net.minecraftforge.fluids.FluidRegistry;
@@ -37,7 +39,7 @@ import net.minecraftforge.fml.common.registry.GameRegistry;
 public class Aunis {	
     public static final String ModID = "aunis";
     public static final String Name = "AUNIS";
-    public static final String Version = "1.9.7-beta";
+    public static final String Version = "1.9.7-beta-NXDev-Custom";
     public static final int DATA_VERSION = 7;
 
     public static final String MCVersion = "[1.12.2]";
@@ -86,6 +88,7 @@ public class Aunis {
     	ThermalIntegration.registerRecipes();
     	NetworkRegistry.INSTANCE.registerGuiHandler(instance, new AunisGuiHandler());
     	ItemEndpointCapability.register();
+    	ForgeChunkManager.setForcedChunkLoadingCallback(Aunis.instance, ChunkLoadingCallback.INSTANCE);
     	
     	// ----------------------------------------------------------------------------------------------------------------
     	// OpenComputers

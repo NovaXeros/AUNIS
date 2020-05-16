@@ -24,16 +24,18 @@
   "gate_milkyway_open": {
     "category": "ambient",
     "subtitle": "aunis.subtitle.gate_milkyway_open",
-    "sounds": [
-      "aunis:gate/gate_milkyway_open"
+    "sounds": [ {
+      "name": "aunis:gate/gate_milkyway_open"
+      }
     ]
   },
   
   "gate_milkyway_close": {
     "category": "ambient",
     "subtitle": "aunis.subtitle.gate_milkyway_close",
-    "sounds": [
-      "aunis:gate/gate_milkyway_close"
+    "sounds": [ {
+      "name": "aunis:gate/gate_milkyway_close"
+      }
     ]
   },
   
@@ -48,8 +50,9 @@
   "gate_milkyway_dial_fail": {
     "category": "ambient",
     "subtitle": "aunis.subtitle.gate_milkyway_dial_fail",
-    "sounds": [
-      "aunis:gate/gate_milkyway_dial_fail"
+    "sounds": [ {
+     	"name": "aunis:gate/gate_milkyway_dial_fail"
+     	}
     ]
   },
   

@@ -22,6 +22,7 @@ import mrjake.aunis.Aunis;
 import mrjake.aunis.AunisDamageSources;
 import mrjake.aunis.AunisProps;
 import mrjake.aunis.block.AunisBlocks;
+import mrjake.aunis.chunkloader.ChunkManager;
 import mrjake.aunis.config.AunisConfig;
 import mrjake.aunis.config.StargateDimensionConfig;
 import mrjake.aunis.packet.AunisPacketHandler;
@@ -76,10 +77,6 @@ import net.minecraft.world.DimensionType;
 import net.minecraft.world.EnumSkyBlock;
 import net.minecraft.world.World;
 import net.minecraftforge.common.DimensionManager;
-import net.minecraftforge.common.ForgeChunkManager;
-import net.minecraftforge.common.ForgeChunkManager.LoadingCallback;
-import net.minecraftforge.common.ForgeChunkManager.Ticket;
-import net.minecraftforge.common.ForgeChunkManager.Type;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
 import net.minecraftforge.energy.CapabilityEnergy;
@@ -121,7 +118,7 @@ public abstract class StargateAbstractBaseTile extends TileEntity implements Sta
 		if (!(this instanceof StargateOrlinBaseTile))
 			dialedAddress.clear();
 		
-		ForgeChunkManager.unforceChunk(chunkLoadingTicket, new ChunkPos(pos));
+		ChunkManager.unforceChunk(world, new ChunkPos(pos));
 		sendSignal(null, "stargate_wormhole_closed_fully", new Object[] { isInitiating });
 		
 		markDirty();
@@ -158,7 +155,7 @@ public abstract class StargateAbstractBaseTile extends TileEntity implements Sta
 		stargateState = EnumStargateState.IDLE;
 		sendRenderingUpdate(EnumGateAction.CLEAR_CHEVRONS, 0, false);
 		
-		ForgeChunkManager.unforceChunk(chunkLoadingTicket, new ChunkPos(pos));
+		ChunkManager.forceChunk(world, new ChunkPos(pos));
 		AunisSoundHelper.playPositionedSound(world, pos, SoundPositionedEnum.WORMHOLE_LOOP, false);
 		
 		markDirty();
@@ -462,7 +459,7 @@ public abstract class StargateAbstractBaseTile extends TileEntity implements Sta
 			keepAliveEnergyPerTick = energyRequired.keepAlive;
 		}
 		
-		ForgeChunkManager.forceChunk(chunkLoadingTicket, new ChunkPos(pos));
+		ChunkManager.forceChunk(world, new ChunkPos(pos));
 		
 		sendSignal(null, "stargate_open", new Object[] { isInitiating });
 		
@@ -556,12 +553,7 @@ public abstract class StargateAbstractBaseTile extends TileEntity implements Sta
 	protected TargetPoint targetPoint;
 	protected EnumFacing facing = EnumFacing.NORTH;
 	protected StargateNetwork network;
-	
-	protected Ticket chunkLoadingTicket;
-	protected LoadingCallback chunkLoadingCallback = new LoadingCallback() {
-		public void ticketsLoaded(List<Ticket> tickets, World world) {}
-	};
-	
+		
 	public EnumFacing getFacing() {
 		return facing;
 	}
@@ -575,9 +567,6 @@ public abstract class StargateAbstractBaseTile extends TileEntity implements Sta
 			targetPoint = new TargetPoint(world.provider.getDimension(), pos.getX(), pos.getY(), pos.getZ(), 512);
 			Aunis.ocWrapper.joinOrCreateNetwork(this);
 			Aunis.ocWrapper.joinWirelessNetwork(this);
-			
-			ForgeChunkManager.setForcedChunkLoadingCallback(Aunis.instance, chunkLoadingCallback);
-			chunkLoadingTicket = ForgeChunkManager.requestTicket(Aunis.instance, world, Type.NORMAL);
 			
 			Random random = new Random(pos.hashCode() * 31 + world.provider.getDimension());
 			
@@ -986,11 +975,15 @@ public abstract class StargateAbstractBaseTile extends TileEntity implements Sta
 		isCurrentlyUnstable = false;
 	}
 	
-	private void updateFlashState(boolean flash) {
-		BlockPos tPos = targetGatePos.gatePos;
-				
+	private void updateFlashState(boolean flash) {				
+		
 		AunisPacketHandler.INSTANCE.sendToAllTracking(new StateUpdatePacketToClient(pos, StateTypeEnum.FLASH_STATE, new StargateFlashState(isCurrentlyUnstable)), targetPoint);
-		AunisPacketHandler.INSTANCE.sendToAllTracking(new StateUpdatePacketToClient(tPos, StateTypeEnum.FLASH_STATE, new StargateFlashState(isCurrentlyUnstable)), new TargetPoint(targetGatePos.dimensionID, tPos.getX(), tPos.getY(), tPos.getZ(), 512));
+	
+		if (targetGatePos != null) {
+			BlockPos tPos = targetGatePos.gatePos;
+			AunisPacketHandler.INSTANCE.sendToAllTracking(new StateUpdatePacketToClient(tPos, StateTypeEnum.FLASH_STATE, new StargateFlashState(isCurrentlyUnstable)), new TargetPoint(targetGatePos.dimensionID, tPos.getX(), tPos.getY(), tPos.getZ(), 512));
+		}
+	
 	}
 	
 	
@@ -1075,7 +1068,9 @@ public abstract class StargateAbstractBaseTile extends TileEntity implements Sta
 				break;
 				
 			case FLASH_STATE:
-				getRendererStateClient().horizonUnstable = ((StargateFlashState) state).flash;
+				if (getRendererStateClient() != null)
+					getRendererStateClient().horizonUnstable = ((StargateFlashState) state).flash;
+
 				break;
 				
 			default:
@@ -1165,7 +1160,7 @@ public abstract class StargateAbstractBaseTile extends TileEntity implements Sta
 				if (isCurrentlyUnstable) {
 					flashIndex++;
 					
-					if (flashIndex == 1) {
+					if (flashIndex == 1 && targetGatePos != null) {
 						AunisSoundHelper.playSoundEvent(world, pos, SoundEventEnum.WORMHOLE_FLICKER);
 						AunisSoundHelper.playSoundEvent(targetGatePos.getWorld(), targetGatePos.gatePos, SoundEventEnum.WORMHOLE_FLICKER);
 					}
