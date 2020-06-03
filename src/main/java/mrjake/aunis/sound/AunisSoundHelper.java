@@ -1,11 +1,11 @@
 package mrjake.aunis.sound;
 
-import mrjake.aunis.Aunis;
 import mrjake.aunis.config.AunisConfig;
 import mrjake.aunis.packet.AunisPacketHandler;
 import mrjake.aunis.packet.SoundPositionedPlayToClient;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.network.play.server.SPacketSoundEffect;
+import net.minecraft.util.SoundCategory;
 import net.minecraft.util.SoundEvent;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -27,7 +27,7 @@ public class AunisSoundHelper {
 				,pos.getY()+0.5
 				,pos.getZ()+0.5
 				,soundEventEnum.soundEvent
-				,Aunis.soundCategory
+				,SoundCategory.AMBIENT
 				,soundEventEnum.attenuationMultiplied ? soundEventEnum.volume * (float)AunisConfig.stargateConfig.audioRangeMultiplier : soundEventEnum.volume
 				,1.0f
 				,false);
@@ -38,7 +38,7 @@ public class AunisSoundHelper {
 				 null
 				,pos
 				,soundEventEnum.soundEvent
-				,Aunis.soundCategory
+				,SoundCategory.AMBIENT
 				,soundEventEnum.attenuationMultiplied ? soundEventEnum.volume * (float)AunisConfig.stargateConfig.audioRangeMultiplier : soundEventEnum.volume
 				,1.0f);
 	}
@@ -46,7 +46,7 @@ public class AunisSoundHelper {
 	public static void playSoundToPlayer(EntityPlayerMP player, SoundEventEnum soundEventEnum, BlockPos pos) {
 		player.connection.sendPacket(
 				 new SPacketSoundEffect(soundEventEnum.soundEvent 
-				,Aunis.soundCategory
+				,SoundCategory.AMBIENT
 				,pos.getX()+0.5
 				,pos.getY()+0.5
 				,pos.getZ()+0.5

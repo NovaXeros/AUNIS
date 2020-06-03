@@ -15,9 +15,9 @@ import mrjake.aunis.integration.OCWrapperInterface;
 import mrjake.aunis.integration.ThermalIntegration;
 import mrjake.aunis.packet.AunisPacketHandler;
 import mrjake.aunis.proxy.IProxy;
-import mrjake.aunis.sound.MODSoundCategory;
+//import mrjake.aunis.sound.MODSoundCategory;
 import mrjake.aunis.worldgen.AunisWorldGen;
-import net.minecraft.util.SoundCategory;
+//import net.minecraft.util.SoundCategory;
 import net.minecraft.util.datafix.FixTypes;
 import net.minecraftforge.common.ForgeChunkManager;
 import net.minecraftforge.common.util.CompoundDataFixer;
@@ -59,7 +59,7 @@ public class Aunis {
     public static IProxy proxy;
     public static Logger logger;
     
-    public static SoundCategory soundCategory;
+    //public static SoundCategory soundCategory;
     
     // ------------------------------------------------------------------------
     // OpenComputers
@@ -82,7 +82,7 @@ public class Aunis {
         AunisFluids.registerFluids();
         
     	StargateDimensionConfig.load(event.getModConfigurationDirectory());
-    	soundCategory = MODSoundCategory.add("Aunis");
+    	//soundCategory = soundCategory.AMBIENT;
     	
         proxy.preInit(event);
     }
